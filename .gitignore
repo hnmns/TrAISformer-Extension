@@ -1,0 +1,17 @@
+# Results and checkpoints
+results/
+*.pt
+*.pth
+*.pkl
+
+# Data files
+data/
+
+# Python
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+
+# Environment
+.env
+venv/
