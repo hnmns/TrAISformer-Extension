@@ -162,7 +162,7 @@ class Trainer:
         def run_epoch(split, epoch=0):
             is_train = split == 'Training'
             model.train(is_train)
-            data = self.train_dataset if is_train else self.test_dataset
+            data = self.train_dataset if is_train else self.test_dataset # RK: Not self.valid_dataset?
             loader = DataLoader(data, shuffle=True, pin_memory=True,
                                 batch_size=config.batch_size,
                                 num_workers=config.num_workers)
@@ -258,22 +258,30 @@ class Trainer:
                 #                 logging.info("test loss: %f", test_loss)
                 return test_loss
 
+        patience = 5
+        patience_counter = 0 # For early stopping
         best_loss = float('inf')
         self.tokens = 0  # counter used for learning rate decay
         best_epoch = 0
 
         for epoch in range(config.max_epochs):
-
             run_epoch('Training', epoch=epoch)
             if self.test_dataset is not None:
-                test_loss = run_epoch('Valid', epoch=epoch)
+                test_loss = run_epoch('Valid', epoch=epoch) # RK: Why is this 'test" and not 'valid_loss'?
 
             # supports early stopping based on the test loss, or just save always if no test set is provided
             good_model = self.test_dataset is None or test_loss < best_loss
             if self.config.ckpt_path is not None and good_model:
                 best_loss = test_loss
                 best_epoch = epoch
+                patience_counter = 0 # Improvement found, reset counter
                 self.save_checkpoint(best_epoch + 1)
+            else:
+                patience_counter += 1
+                logging.info(f"No improvement for {patience_counter}/{patience} epochs.")
+                if patience_counter >= patience:
+                    logging.info(f"Early stopping at epoch {epoch + 1}.")
+                    break
 
             ## SAMPLE AND PLOT
             # ==========================================================================================

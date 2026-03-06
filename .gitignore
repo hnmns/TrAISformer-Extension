@@ -6,6 +6,7 @@ results/
 
 # Data files
 data/
+models/
 
 # Python
 __pycache__/
