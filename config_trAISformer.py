@@ -32,8 +32,8 @@ class Config():
     n_samples = 16
     
     init_seqlen = 18
-    max_seqlen = 120
-    min_seqlen = 36
+    max_seqlen = 120 # Max voyage duration: 20hrs
+    min_seqlen = 36 # Min voyage duration: 6hrs?
     
     dataset_name = "ct_dma"
 
